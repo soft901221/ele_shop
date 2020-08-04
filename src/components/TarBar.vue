@@ -4,6 +4,7 @@
           <li :class="{active:index==nowIndex}" v-for="(item,index) in titles" :key="index" @click="tabSelect(index)">{{item}}</li>
         </ul>
   </div>
+
 </template>
 
 <script>
