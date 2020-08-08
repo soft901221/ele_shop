@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id='mm' :style="{fontSize:postFontSize+'px'}">
+        <hh v-for='item in posts'  :key='item.id' :item1='item' v-on:toigs='onEnlargeText'></hh>
+        <ii v-model="dd"></ii>
+        <base-checkbox v-model="lovingVue"></base-checkbox>
+        <h2>{{lovingVue}}</h2>
+        <h2>{{dd}}</h2>
+        <text-pro :item="dsada" v-on:adds="adds"></text-pro>
+    </div>
+
+    <script>
+        Vue.component("text-pro",{
+            props:["item"],
+            template:`<h4 v-on:click="$emit('adds',4)">{{item}}</h4>`
+        })
+        Vue.component("hh", {
+            props: ["item1"],
+            template: `<div><h2>{{item1.title}}</h2><button v-on:click="$emit('toigs',4)">放大</button><p>{{item1.con}}</p></div>`
+        })
+        Vue.component("ii",{
+            model:{
+              event:'input',
+              prop:'value'  
+            },
+            props:["value"],
+            template:`<input :value="value" v-on:input="$emit('input',$event.target.value)"></input>`
+        })
+        Vue.component('base-checkbox', {
+  model: {
+    prop: 'checked',
+    event: 'change'
+  },
+  props: {
+    checked: Boolean
+  },
+  template: `
+    <input
+      type="checkbox"
+      v-bind:checked="checked"
+      v-on:change="$emit('change', $event.target.checked)"
+    >
+  `
+})
+        new Vue({
+                el: "#mm",
+                data(){
+                    return{
+                        posts: [
+      { id: 1, title: 'My journey with Vue' ,con:'33'},
+      { id: 2, title: 'Blogging with Vue' ,con:'33' },
+      { id: 3, title: 'Why Vue is so fun' ,con:'33' }
+    ],
+    postFontSize: 10,
+    lovingVue:false,
+    dd:'',
+    dsada:12
+                    }
+                },
+                methods: {
+                    onEnlargeText(enlargeAmount){
+                        this.postFontSize+=enlargeAmount
+                    },
+                    adds(ee){
+                        this.dsada+=ee
+                    }
+                },
+
+
+
+            }
+
+        )
+    </script>
+</body>
+
+</html>

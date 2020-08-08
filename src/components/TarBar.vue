@@ -1,8 +1,8 @@
 <template>
   <div id="tarbar">
    <ul>
-          <li :class="{active:index==nowIndex}" v-for="(item,index) in titles" :key="index" @click="tabSelect(index)">{{item}}</li>
-        </ul>
+          <li :class="{active:index==activeIndex}" v-for="(item,index) in titles" :key="item.id" @click="tabSelect(index,item.id)">{{item.label}}</li>
+    </ul>
   </div>
 
 </template>
@@ -10,20 +10,41 @@
 <script>
 export default {
   name: 'TarBar',
-  data() {
+  props:{
+    titles:{
+      type:Array,
+      default:function () {
+        return [
+{
+              id:1,
+              label:"商品"
+            },
+            {
+              id:2,
+              label:"评论"
+            },
+            {
+              id:3,
+              label:"商家"
+            }
+        ]
+      }
+    },
+    nowIndex:{
+      type:Number,
+      default:0
+    }
+  },
+  data(){
     return {
-      titles:[
-        "商品",
-        "评论",
-        "商家"
-      ],
-      nowIndex:0
+      activeIndex:this.nowIndex
     }
   },
   methods: {
-    tabSelect(i){
+    tabSelect(i,id){
       // console.log(i)
-      this.nowIndex = i
+      this.activeIndex = i;
+      this.$emit('tab-select',id);
     }
   },
 }
