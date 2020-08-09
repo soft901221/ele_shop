@@ -3,6 +3,8 @@ import App from './App.vue'
 import 'lib-flexible/flexible'
 import router from './router'
 Vue.config.productionTip = false
+// 全局引入字体图标
+import  './assets/icon/iconfont.css'
 
 // 使用axios
 import axios from 'axios'

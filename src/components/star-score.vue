@@ -19,7 +19,6 @@ props:{
     type:Number,
     default:0
     }
-    
 },
 //监听属性 类似于data概念
 computed: {},

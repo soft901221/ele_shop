@@ -1,7 +1,9 @@
 <!-- 店铺 -->
 <template>
   <Scroll>
+    <div>
     <div class="ratings">
+      <!-- 顶部 -->
       <div class="rating-top">
         <div class="rating-top-left">
           <h2>{{sellers.score}}</h2>
@@ -15,14 +17,50 @@
           </p>
           <p>
             <span>商品评分</span>
-           <star-score :stars="sellers.foodScore"></star-score>
+            <star-score :stars="sellers.foodScore"></star-score>
           </p>
           <p>
             <span>配送时间</span>
-            <span>38分钟</span>
+            <span>{{sellers.deliveryTime}}分钟</span>
           </p>
         </div>
       </div>
+    </div>
+    <!-- 顶部end -->
+
+    <!-- 评论区 -->
+    <div>
+      <div class="ratings-content-filter">
+        <span
+          v-for="(item,index) in ratingTypes"
+          :key="index"
+          :class="[item.flag]"
+          @click="slectItem(item.type)"
+        >{{item.label}}{{item.count}}</span>
+      </div>
+      <div class="ratings-content-list">
+        <ul>
+          <li v-for="(item,index) in ratings" :key="index">
+            <div>
+              <img :src="item.avatar" alt />
+            </div>
+            <div>
+              <p>
+                <span>{{item.username}}</span>
+                <i class="times">{{item.rateTime}}</i>
+              </p>
+              <star-score :stars="item.score"></star-score>
+              <span>{{item.deliveryTime}}分送达</span>
+              <p>{{item.text}}</p>
+              <div class="recommendation">
+                <i :class="['iconfont',item.rateType==0?'icon-good':'icon-bad']"></i>
+                <span v-for="(rat,i) in item.recommend" :key="i">{{rat}}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
     </div>
   </Scroll>
 </template>
@@ -33,25 +71,73 @@ import StarScore from "@/components/star-score";
 export default {
   components: {
     Scroll,
-    StarScore
+    StarScore,
   },
-  data(){
-      return{
-        sellers:{}
-      }
+  data() {
+    return {
+      sellers: {},
+      ratings: [],
+      ratingTypes: [
+        {
+          label: "全部",
+          flag: "all",
+          type: -1,
+        },
+        {
+          label: "满意",
+          flag: "positive",
+          type: 0,
+        },
+        {
+          label: "不满意",
+          flag: "negative",
+          type: 1,
+        },
+      ],
+    };
   },
   created() {
-      this.$axios.get('/seller').then((res)=>{
-          console.log(res.data.data);
-        //   this.sellers = res.data.data
-        this.sellers = res.data.data
+    // 加载评论1
+    this.$axios
+      .get("/ratings")
+      .then((res) => {
+        this.ratings = res.data.data;
+        this.ratingTypes.forEach((item) => {
+          if (item.type == -1) {
+            item.count = this.ratings.length;
+          } else {
+            item.count = this.ratings.filter(
+              (rat) => rat.rateType == item.type
+            ).length;
+          }
+        });
+        console.log(11);
+        console.log(this.ratingTypes);
       })
+      .then(() => {
+        // 加载评分
+        this.$axios.get("/seller").then((res) => {
+          this.sellers = res.data.data;
+        });
+      });
+  },
+  methods: {
+    slectItem(type){
+      console.log(type);
+      this.ratings = this.ratings.filter(item=>{
+        console.log(item.rateType);
+        return item.rateType ==type
+      })
+      console.log(this.ratings);
+      
+    }
   },
 };
 </script>
 <style lang="scss" scoped>
 .ratings {
   padding: 40px;
+  border-bottom: 30px #eee solid;
   .rating-top {
     display: flex;
     flex-wrap: nowrap;
@@ -78,11 +164,74 @@ export default {
     .rating-top-right {
       width: 60%;
       padding-left: 37.5px;
-      p{
-          line-height: 45px;
-          span:nth-of-type(1){
-              margin-right: 30px;
-          }
+      p {
+        line-height: 45px;
+        span:nth-of-type(1) {
+          margin-right: 30px;
+        }
+      }
+    }
+  }
+}
+.ratings-content-filter {
+  span {
+    width: 130px;
+    height: 60px;
+    line-height: 60px;
+    display: inline-block;
+    background: #00a0dc;
+    margin: 20px;
+    text-align: center;
+  }
+  span.all {
+    color: white;
+  }
+  span.positive {
+    background: #d6ecf8;
+  }
+  span.negative {
+    background: #ccc;
+    color: #fff;
+  }
+}
+.ratings-content-list {
+  li {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 20px;
+    & > div:nth-of-type(1) {
+      width: 10%;
+      margin-right: 20px;
+      img {
+        display: block;
+        width: 100%;
+        border-radius: 50%;
+      }
+    }
+    & > div:nth-of-type(2) {
+      .times {
+        float: right;
+        font-size: 20px;
+        color: #93999f;
+      }
+      .recommendation {
+        i {
+          color: #00a0dc;
+          font-size: 30px;
+          vertical-align: middle;
+        }
+        span {
+          color: #93999f;
+          border: 1px solid #93999f;
+          line-height: 40px;
+          height: 40px;
+          display: inline-block;
+          box-sizing: border-box;
+          padding: 0 20px;
+          font-size: 18px;
+          text-align: center;
+          margin: 10px;
+        }
       }
     }
   }
