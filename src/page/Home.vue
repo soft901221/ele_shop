@@ -3,6 +3,7 @@
     <Header></Header>
     <tar-bar :titles='titles' :now-index='0' @tab-select="tabSelect"></tar-bar>
     <component :is="ponname"></component>
+    <Layers></Layers>
   </div>
 </template>
 <script>
@@ -11,6 +12,7 @@ import TarBar from "@/components/TarBar";
 import Goods from "@/components/Goods";
 import Shops from "@/components/Shops";
 import Rating from "@/components/Rating";
+import Layers from "@/components/Layers";
 
 const titles =[
    {
@@ -34,7 +36,8 @@ export default {
     TarBar,
     Goods,
     Shops,
-    Rating
+    Rating,
+    Layers
   },
   data(){
     return{

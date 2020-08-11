@@ -31,7 +31,7 @@ export default {
        */
       scrollX: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * 是否派发滚动事件
@@ -91,7 +91,7 @@ export default {
         this.scroll = new BScroll(this.$refs.wrapper, {
           probeType: this.probeType,
           click: this.click,
-          scrollX: this.scrollX
+          scrollX: true
         })
         // 是否派发滚动事件
         if (this.listenScroll) {
@@ -163,11 +163,6 @@ export default {
 .rating{
      overflow: hidden;
   height: calc(100vh - 415px);
-  .content{
-    background: red;
-    li{
-    
-    }
-  }
+
 }
 </style>
