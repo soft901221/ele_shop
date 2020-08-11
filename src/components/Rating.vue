@@ -34,13 +34,15 @@
         <span
           v-for="(item,index) in ratingTypes"
           :key="index"
-          :class="[item.flag]"
+          :class="[item.flag,{'selected':item.type==ratingType}]"
           @click="slectItem(item.type)"
         >{{item.label}}{{item.count}}</span>
       </div>
+      <!-- 只看有评论的 -->
+      <p class="p-selected" @click="selectRatings" :class="{'on':selectRating==true}"><i class="iconfont icon-success"></i> 只看有内容的评论</p>
       <div class="ratings-content-list">
         <ul>
-          <li v-for="(item,index) in ratings" :key="index">
+          <li v-for="(item,index) in ratsIndex" :key="index">
             <div>
               <img :src="item.avatar" alt />
             </div>
@@ -77,6 +79,8 @@ export default {
     return {
       sellers: {},
       ratings: [],
+      ratingType:-1,//默认查看全部(好评，差评)
+      selectRating:false,//默认看全部评论
       ratingTypes: [
         {
           label: "全部",
@@ -94,6 +98,7 @@ export default {
           type: 1,
         },
       ],
+      // ratsIndex:[]
     };
   },
   created() {
@@ -102,6 +107,7 @@ export default {
       .get("/ratings")
       .then((res) => {
         this.ratings = res.data.data;
+        this.ratsIndex = this.ratings;
         this.ratingTypes.forEach((item) => {
           if (item.type == -1) {
             item.count = this.ratings.length;
@@ -121,15 +127,57 @@ export default {
         });
       });
   },
+  computed: {
+    ratsIndex:{
+      get(){
+        // console.log(val);
+ if(this.ratingType == -1){
+         if(!this.selectRating){
+         return this.ratings
+        }else{
+          return this.ratings.filter(item=>{
+            return item.text !=''
+          })
+        }
+        
+      }else{
+        if(!this.selectRating){
+          return this.ratings.filter(item=>{
+            return item.rateType ==this.ratingType  
+          })
+        }else{
+          return this.ratings.filter(item=>{
+            console.log(this.selectRating==false);
+            return item.rateType ==this.ratingType &&  item.text !=''
+          })
+        }
+      }
+      },
+      set(newval){
+     
+      }
+     
+    }
+  },
   methods: {
     slectItem(type){
       console.log(type);
-      this.ratings = this.ratings.filter(item=>{
-        console.log(item.rateType);
-        return item.rateType ==type
-      })
-      console.log(this.ratings);
-      
+      this.ratingType = type;    
+    },
+    // 选择评论状态
+    selectRatings(){
+      this.selectRating = !this.selectRating;
+      console.log(this.selectRating);
+      // if(this.selectRating){
+        
+      //   this.ratsIndex = this.ratings.filter(item=>{
+      //           return item.text !=''&& this.ratingType==-1 || item.rateType==this.ratingType
+
+      //         })
+      //         console.log( this.ratingTypes.length);
+      // }else{
+      //    this.ratsIndex = this.ratings
+      // }
     }
   },
 };
@@ -179,12 +227,12 @@ export default {
     height: 60px;
     line-height: 60px;
     display: inline-block;
-    background: #00a0dc;
     margin: 20px;
     text-align: center;
   }
+  
   span.all {
-    color: white;
+    background: #d6ecf8;
   }
   span.positive {
     background: #d6ecf8;
@@ -192,6 +240,10 @@ export default {
   span.negative {
     background: #ccc;
     color: #fff;
+  }
+  span.selected{
+    color: white;
+    background: #00a0dc;
   }
 }
 .ratings-content-list {
@@ -235,5 +287,13 @@ export default {
       }
     }
   }
+
 }
+  .p-selected i{
+font-size: 32px;
+color: #93999f;
+  }
+  .p-selected.on i{
+    color: #00a0dc;
+  }
 </style>
