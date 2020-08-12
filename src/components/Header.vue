@@ -1,5 +1,5 @@
 <template>
-  <div id="header">
+  <div id="header" @click="layerState">
     <div class="top">
       <img src="../assets/seller.jpg" alt />
       <div class="right">
@@ -22,9 +22,16 @@
 import BScroll from "better-scroll";
 export default {
   name: "Header",
-  mounted() {
-   
-  }
+  data() {
+    return {
+      layersActive:false
+    }
+  },
+  methods: {
+    layerState(){
+      this.$emit('layers',this.layersActive);
+    }
+  },
 };
 </script>
 <style lang="scss" scoped>

@@ -11,7 +11,11 @@ import axios from 'axios'
 Vue.prototype.$axios = axios
 // 引入 mock js
 require('./mock.js')
+
+// 引入vuex
+import store from './store'
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')

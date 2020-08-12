@@ -1,14 +1,15 @@
 <!--  -->
 <template>
     <div class='layers'>
-        <h2>3123</h2>
-        <star-score :stars=4></star-score>
+        <h2>{{seller.name}}</h2>
+        <star-score :stars="seller.score"></star-score>
         <h3>优惠信息</h3>
         <ul>
-            <li>1</li>
+            <li v-for="(item,index) in seller.supports" :key="index">{{item.description}}</li>
         </ul>
         <h3>商家公告</h3>
-        <p>3123123</p>
+        <p class="bulletin">{{seller.bulletin}}</p>
+        <i class="iconfont icon-close" @click="closeLayer"></i>
     </div>
 </template>
 
@@ -20,6 +21,9 @@ import StarScore from "@/components/star-score";
 export default {
 //import引入的组件需要注入到对象中才能使用
 components: {StarScore},
+props:{
+    seller:Object
+},
 data() {
 //这里存放数据
 return {
@@ -32,7 +36,10 @@ computed: {},
 watch: {},
 //方法集合
 methods: {
-
+    closeLayer(){
+        console.log(3123);
+        this.$emit('layerstate',false)
+    }
 },
 //生命周期 - 创建完成（可以访问当前this实例）
 created() {
@@ -64,6 +71,21 @@ activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
     color:white;
     text-align: center;
         padding: 80px;
+        .bulletin{
+            text-align: left;
+            line-height: 70px;
+            font-size: 26px;
+        }
+        li{
+            text-align: left;
+            line-height: 70px;
+            font-size: 26px;
+        }
+        .icon-close{
+            font-size: 50px;
+            margin-top: 40px;
+            display: inline-block;
+        }
         h2{
             margin-bottom: 40px;
             font-size: 40px;

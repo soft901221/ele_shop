@@ -1,9 +1,9 @@
 <template>
   <div id="home">
-    <Header></Header>
+    <Header @layers='layerState'></Header>
     <tar-bar :titles='titles' :now-index='0' @tab-select="tabSelect"></tar-bar>
     <component :is="ponname"></component>
-    <Layers></Layers>
+    <Layers :seller="seller" v-if="layersActive" @layerstate="getLayersState"></Layers>
   </div>
 </template>
 <script>
@@ -43,13 +43,28 @@ export default {
     return{
       ponname:"Goods",
       titles,
-      pages
+      pages,
+      layersActive:false,
+      seller:{}
     }
+  },
+  created() {
+    this.$axios.get("/seller").then((res) => {
+      console.log(res.data);
+      this.seller = res.data.data;
+    });
   },
   methods: {
     tabSelect(id){
         console.log(id);
         this.ponname = this.pages[id-1]
+    },
+    layerState(msg){
+      console.log(msg);
+      this.layersActive = !msg
+    },
+    getLayersState(msg){
+    this.layersActive = msg
     }
   },
 };
