@@ -2,8 +2,9 @@
   <div id="home">
     <Header @layers='layerState'></Header>
     <tar-bar :titles='titles' :now-index='0' @tab-select="tabSelect"></tar-bar>
-    <component :is="ponname"></component>
+    <component :is="ponname" @carFoods='carFoods'></component>
     <Layers :seller="seller" v-if="layersActive" @layerstate="getLayersState"></Layers>
+    <good-car :carFoods="carfoods"></good-car>
   </div>
 </template>
 <script>
@@ -13,7 +14,7 @@ import Goods from "@/components/Goods";
 import Shops from "@/components/Shops";
 import Rating from "@/components/Rating";
 import Layers from "@/components/Layers";
-
+import goodCar from "@/components/good-car";
 const titles =[
    {
         id:1,
@@ -37,7 +38,8 @@ export default {
     Goods,
     Shops,
     Rating,
-    Layers
+    Layers,
+    goodCar
   },
   data(){
     return{
@@ -45,7 +47,8 @@ export default {
       titles,
       pages,
       layersActive:false,
-      seller:{}
+      seller:{},
+      carfoods:[]
     }
   },
   created() {
@@ -65,6 +68,10 @@ export default {
     },
     getLayersState(msg){
     this.layersActive = msg
+    },
+    carFoods(ms){
+      console.log(ms);
+      this.carfoods = ms
     }
   },
 };

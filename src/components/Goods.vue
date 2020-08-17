@@ -23,10 +23,10 @@
       @pulldown="loadData"
     >
       <ul class="content">
-        <li v-for="items in data" :key="items.id" ref="goodsGroup" class="typetitle">
+        <li v-for="(items,index) in data" :key="index" ref="goodsGroup" class="typetitle">
           <h5>{{items.name}}</h5>
           <ul>
-            <li v-for="item in items['foods']" :key="item.id">
+            <li v-for="(item,key) in items['foods']" :key="key">
               <div class="pic">
                 <img :src="item.image" alt />
               </div>
@@ -40,7 +40,9 @@
                 <div class="price">
                   ￥ {{item.price}}
                   <div>
-                    <i class="iconfont icon-add-circle"></i>
+                    <i class="iconfont icon-minus-circle" :class="{'on':shopGoods[index]['foods'][key]['count']>0}" @click="reduce(index,key)"></i>
+                    <span class="good-num" :class="{'on':true}">{{shopGoods[index]['foods'][key]['count']}}</span>
+                    <i class="iconfont icon-add-circle" @click="addCar(index,key)"></i>
                   </div>
                 </div>
               </div>
@@ -48,17 +50,12 @@
           </ul>
         </li>
       </ul>
+      <!-- <div>
+        <p v-for="(item,index) in selectGoodsList" :key="index">{{item.name}}{{item.count}}</p>
+      </div> -->
       <div class="loading-wrapper"></div>
     </Scroll>
-    <div class="fixCar">
-      <div class="car">
-        <span>231</span>
-        <i class="iconfont icon-cart-Empty-fill"></i>
-      </div>
-      <span class="total-price" >￥ 20元</span>
-      <span class="freight">另需配送费20元</span>
-      <span class="toCar">去结算</span>
-    </div>
+   
   </div>
 </template>
 
@@ -66,9 +63,10 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
 import Scroll from "@/components/Scroll";
+
 export default {
   //import引入的组件需要注入到对象中才能使用
-  components: { Scroll },
+  components: { Scroll},
   data() {
     return {
       data: [],
@@ -76,24 +74,23 @@ export default {
       activeIndex: 0,
       heightToTop: [0], //每个栏目对应滚动距离合集
       scrollY: 0, //滚动的距离
+    
     };
   },
-
+ 
   //方法集合
   methods: {
     loadData() {
       this.$axios
         .get("/goods")
         .then((res) => {
-          console.log(res.data.data);
           this.data = res.data.data.concat(this.data);
+          console.log(this.data);
         })
         .then(() => {
-          console.log(this.$refs.goodsGroup);
           this.$refs.goodsGroup.forEach((el, index) => {
             this.heightToTop.push(el.offsetHeight + this.heightToTop[index]);
           });
-          console.log(this.heightToTop);
         });
     },
     // 商品滚动
@@ -106,7 +103,6 @@ export default {
           this.scrollY < this.heightToTop[i + 1]
         ) {
           this.activeIndex = i;
-          console.log(i);
           // console.log(this.$refs.goodsScroll);
           if (i === this.$refs.goodsGroup.length - 2) {
             //当滚动到倒数第2个位置时左侧列表向上滚动一个距离
@@ -123,12 +119,56 @@ export default {
     //左侧商品导航点击事件
     changeIndex(i) {
       this.activeIndex = i;
-      console.log(this.$refs.navGoods);
       const target = this.$refs.goodsGroup[i];
       this.$refs.goodsScroll.scrollToElement(target, 300);
-      console.log(target);
-      console.log(i);
     },
+    // 商品添加入购物车
+    addCar(index,key){
+      
+      this.shopGoods[index]['foods'][key]['count']++;
+      this.$emit("carFoods",this.selectGoodsList)
+    
+    },
+    // 减少购物车数量
+    reduce(item){
+      // this.carState = true
+      console.log(item);
+    }
+  },
+  computed: {
+    shopGoods(){
+      try {
+        var copyData = this.data;
+
+      } catch (error) {
+
+        return []
+      }
+      
+      for (let index = 0; index < copyData.length; index++) {
+        //  copyData[index]['count'] = 0;
+      this.$set(copyData[index], "count", 0);
+       for (let index2 = 0; index2 <  copyData[index]['foods'].length; index2++) {
+          
+          // copyData[index]['foods'][index2]['count'] = 0;
+         this.$set(copyData[index].foods[index2], "count", 0);
+       }
+        
+      }
+      console.log(copyData);
+      return copyData
+    },
+    selectGoodsList(){
+      const selectGoodsList = [];
+      this.shopGoods.forEach(good=>{
+        console.log(1);
+        good.foods.forEach(food=>{
+          if(food.count>0) selectGoodsList.push(food)
+        })
+      })
+      console.log(selectGoodsList);
+      return selectGoodsList
+    }
   },
   created() {
     this.loadData();
@@ -182,16 +222,48 @@ export default {
           color: red;
           font-weight: 500;
           position: relative;
+          
           div {
             position: absolute;
             right: 30px;
             top: 0;
+            & i{
+            vertical-align: sub;
+            }
+            .icon-minus-circle{
+              margin-right: -90px;
+              display: none;
+              opacity: 0;
+              transition: all 1s;
+              &.on{
+                display: inline;
+                 opacity: 1;
+                 margin-right: 0;
+              }
+            }
+          span{
+            margin: 0 20px;
+             display: none;
+              opacity: 0;
+              transition: opacity 1s;
+               &.on{
+               
+                 opacity: 1;
+                  display: inline;
+                 
+              }
+          }
           }
           .icon-add {
             &-circle {
               font-size: 40px;
               color: #00a0dc;
             }
+            
+          }
+          .icon-minus-circle{
+            font-size: 40px;
+              color: #00a0dc;
           }
         }
         .ys {
@@ -201,51 +273,5 @@ export default {
     }
   }
 }
-.fixCar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 100px;
-  width: 100%;
-  background: #07111b;
-  >span{
-   color: #999;
-   &:nth-of-type(1){
-     margin-left: 180px;
-    font-weight: 800;
-    font-size: 36px;
-    line-height: 100px;
-    margin-right: 40px;
-   }
-  }
-  .car {
-    transform: translate(50px, -30px);
-    display: inline-block;
-    border-radius: 50%;
-    // background: #00a0dc;
-    background: #333;
-    position: absolute;
-    padding: 20px;
-    i {
-      font-size: 60px;
-      color: #999;
-    }
-    span {
-      position: absolute;
-    }
-    
-  }
-  .toCar{
-      display: block;
-    background: #2b333b;
-    height: 100px;
-    width: 200px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    line-height: 100px;
-    text-align: center;
-    font-size: 26px;
-    }
-}
+
 </style>

@@ -5,11 +5,11 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    count: 3
+    carState: false
   },
   mutations: {
-    increment (state) {
-      state.count++
+    carActive(state){
+        state.carState = true
     }
   }
 })
