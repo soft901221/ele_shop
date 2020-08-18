@@ -1,21 +1,25 @@
 <!--  -->
 <template>
 <div id="cars">
-  <div class="foodsList">
+  <div class="backCar">
+  <div class="foodsList" :class="{'carState':carState}">
+    <div class="foodsList-title">购物车 <i class="iconfont icon-close" @click="closeCar"></i></div>
     <ul>
-        <li v-for="(item,index) in carFoods" :key="index">{{item.name}} {{item.count}}</li>
+        <li v-for="(item,index) in carFoods" :key="index">{{item.name}}<span><em>￥{{item.price}}</em><good-number :food="item"></good-number></span></li>
       </ul>
   </div>
+  </div>
   <div class="fixCar">
-      <div class="car" :class="{'on':carFoods.length>0}">
+    
+      <div class="car" :class="{'on':carFoods.length>0}" @click="showCarList">
         <span :class="{'on':carFoods.length>0}">{{carFoodsLength}}</span>
         <i class="iconfont icon-cart-Empty-fill" :class="{'on':carFoods.length>0}"></i>
       </div>
-      <span class="total-price" :class="{'on':carFoods.length>0}">￥ 33元</span>
+      <span class="total-price" :class="{'on':carFoods.length>0}">￥ {{totalPrices}}元</span>
       <span class="freight">另需配送费20元</span>
-      <span class="toCar" :class="{'on':carFoods.length>0}">去结算</span>
+      <span class="toCar" :class="{'on':carFoods.length>0}" @click="tolayer">去结算</span>
       
-    </div>
+</div>
 </div>
 
 </template>
@@ -23,20 +27,21 @@
 <script>
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
-
+import goodNumber from "@/components/good-number";
 export default {
 //import引入的组件需要注入到对象中才能使用
-components: {},
+components: {goodNumber},
 props:{
     carFoods:{
         type:Array,
         default:()=>[{}]
-    }
+    },
+   
 },
 data() {
 //这里存放数据
 return {
-
+carState:false
 };
 },
 //监听属性 类似于data概念
@@ -56,15 +61,32 @@ computed: {
   },
   totalPrices(){
     return this.carFoods.reduce((pre,cur)=>{
-      return pre.count*pre.prices+cur.count*pre.prices
-    })
+      
+      return pre+cur.count*cur.price
+    },0)
   }
 },
 //监控data中的数据变化
 watch: {},
 //方法集合
 methods: {
-
+  // 查看购物车
+  showCarList(){
+    console.log(231);
+    this.carState = true;
+ 
+  },
+  // 关闭购物车
+  closeCar(){
+    this.carState = false
+  },
+  // 去结算
+  tolayer(){
+     this.$layer.open({
+    content: `总共花费`+this.totalPrices+'元'
+    ,btn: '我知道了'
+  });
+  }
 },
 //生命周期 - 创建完成（可以访问当前this实例）
 created() {
@@ -74,14 +96,47 @@ created() {
 mounted() {
  console.log(333);
   console.log(this.carFoods);
-},
-methods: {
-  
-},
+}
 }
 </script>
 <style lang='scss' scoped>
-//@import url(); 引入公共css类
+.foodsList{
+  background: white;
+  display: none;
+  &-title{
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 100px;
+    border-bottom: 1px solid #eee;
+    padding: 0 20px;
+    i{
+          float: right;
+    font-size: 40px;
+    }
+  }
+  ul{
+    li{
+      font-size: 30px;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 10px;
+    span{
+       display: flex;
+      justify-content: space-between;
+      em{
+        font-style: normal;
+    color: red;
+      }
+      div{
+        margin-left: 20px;
+      }
+    }
+    }
+  }
+}
+.carState{
+  display: block;
+}
 #cars{
  position: absolute;
   bottom: 0;
@@ -155,8 +210,19 @@ methods: {
       color: white;
     }
     }
-    ul{
-      
-    }
+    
+}
+
+</style>
+<style>
+  .layui-m-layermain .layui-m-layercont{
+  font-size: 40px !important;
+}
+.layui-m-layerbtn span{
+   font-size: 30px !important;
+}
+.layui-m-layerbtn{
+      height: 80px !important;
+    line-height: 80px !important;
 }
 </style>

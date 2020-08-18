@@ -39,23 +39,16 @@
                 </div>
                 <div class="price">
                   ￥ {{item.price}}
-                  <div>
-                    <i class="iconfont icon-minus-circle" :class="{'on':shopGoods[index]['foods'][key]['count']>0}" @click="reduce(index,key)"></i>
-                    <span class="good-num" :class="{'on':true}">{{shopGoods[index]['foods'][key]['count']}}</span>
-                    <i class="iconfont icon-add-circle" @click="addCar(index,key)"></i>
-                  </div>
+                  <good-number :food="shopGoods[index]['foods'][key]"></good-number>
                 </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
-      <!-- <div>
-        <p v-for="(item,index) in selectGoodsList" :key="index">{{item.name}}{{item.count}}</p>
-      </div> -->
       <div class="loading-wrapper"></div>
     </Scroll>
-   
+    <good-car :carFoods="selectGoodsList"></good-car>
   </div>
 </template>
 
@@ -63,10 +56,12 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
 import Scroll from "@/components/Scroll";
+import goodNumber from "@/components/good-number";
+import goodCar from "@/components/good-car";
 
 export default {
   //import引入的组件需要注入到对象中才能使用
-  components: { Scroll},
+  components: { Scroll,goodNumber,goodCar },
   data() {
     return {
       data: [],
@@ -74,10 +69,10 @@ export default {
       activeIndex: 0,
       heightToTop: [0], //每个栏目对应滚动距离合集
       scrollY: 0, //滚动的距离
-    
+      
     };
   },
- 
+
   //方法集合
   methods: {
     loadData() {
@@ -122,53 +117,57 @@ export default {
       const target = this.$refs.goodsGroup[i];
       this.$refs.goodsScroll.scrollToElement(target, 300);
     },
-    // 商品添加入购物车
-    addCar(index,key){
-      
-      this.shopGoods[index]['foods'][key]['count']++;
-      this.$emit("carFoods",this.selectGoodsList)
-    
-    },
-    // 减少购物车数量
-    reduce(item){
-      // this.carState = true
-      console.log(item);
+    carFoods(ms){
+      console.log(ms);
+      this.carfoods = ms
     }
+    // 商品添加入购物车
+    // addCar(index,key){
+
+    //   this.shopGoods[index]['foods'][key]['count']++;
+    //   this.$emit("carFoods",this.selectGoodsList)
+
+    // },
+    // // 减少购物车数量
+    // reduce(item){
+    //   // this.carState = true
+    //   console.log(item);
+    // }
   },
   computed: {
-    shopGoods(){
+    shopGoods() {
       try {
         var copyData = this.data;
-
       } catch (error) {
-
-        return []
+        return [];
       }
-      
+
       for (let index = 0; index < copyData.length; index++) {
         //  copyData[index]['count'] = 0;
-      this.$set(copyData[index], "count", 0);
-       for (let index2 = 0; index2 <  copyData[index]['foods'].length; index2++) {
-          
+        this.$set(copyData[index], "count", 0);
+        for (
+          let index2 = 0;
+          index2 < copyData[index]["foods"].length;
+          index2++
+        ) {
           // copyData[index]['foods'][index2]['count'] = 0;
-         this.$set(copyData[index].foods[index2], "count", 0);
-       }
-        
+          this.$set(copyData[index].foods[index2], "count", 0);
+        }
       }
       console.log(copyData);
-      return copyData
+      return copyData;
     },
-    selectGoodsList(){
+    selectGoodsList() {
       const selectGoodsList = [];
-      this.shopGoods.forEach(good=>{
+      this.shopGoods.forEach((good) => {
         console.log(1);
-        good.foods.forEach(food=>{
-          if(food.count>0) selectGoodsList.push(food)
-        })
-      })
+        good.foods.forEach((food) => {
+          if (food.count > 0) selectGoodsList.push(food);
+        });
+      });
       console.log(selectGoodsList);
-      return selectGoodsList
-    }
+      return selectGoodsList;
+    },
   },
   created() {
     this.loadData();
@@ -222,49 +221,14 @@ export default {
           color: red;
           font-weight: 500;
           position: relative;
-          
+
           div {
             position: absolute;
             right: 30px;
             top: 0;
-            & i{
-            vertical-align: sub;
-            }
-            .icon-minus-circle{
-              margin-right: -90px;
-              display: none;
-              opacity: 0;
-              transition: all 1s;
-              &.on{
-                display: inline;
-                 opacity: 1;
-                 margin-right: 0;
-              }
-            }
-          span{
-            margin: 0 20px;
-             display: none;
-              opacity: 0;
-              transition: opacity 1s;
-               &.on{
-               
-                 opacity: 1;
-                  display: inline;
-                 
-              }
+           
           }
-          }
-          .icon-add {
-            &-circle {
-              font-size: 40px;
-              color: #00a0dc;
-            }
-            
-          }
-          .icon-minus-circle{
-            font-size: 40px;
-              color: #00a0dc;
-          }
+         
         }
         .ys {
           margin: 10px 0;
@@ -273,5 +237,4 @@ export default {
     }
   }
 }
-
 </style>
